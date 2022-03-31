@@ -1,0 +1,9 @@
+spring:
+  security:
+    user:
+      name: boot-admin
+      password: test-admin
+
+actuator:
+  username: actuator
+  password: pwd

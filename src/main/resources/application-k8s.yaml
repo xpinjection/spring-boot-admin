@@ -1,0 +1,8 @@
+spring:
+  cloud:
+    kubernetes:
+      discovery:
+        enabled: true
+        service-labels:
+          tech-stack: springboot
+      enabled: true

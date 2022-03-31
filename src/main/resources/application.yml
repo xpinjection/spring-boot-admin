@@ -1,0 +1,55 @@
+server:
+  servlet:
+    jsp:
+      registered: false
+  shutdown: graceful
+
+spring:
+  cloud:
+    kubernetes:
+      enabled: false
+  boot:
+    admin:
+      monitor:
+        info-interval: 10s
+        status-interval: 5000ms
+      discovery:
+        converter:
+          management-context-path: /admin
+  security:
+    user:
+      name:
+      password:
+      roles: ADMIN
+  application:
+    name: boot-admin
+    admin:
+      enabled: true
+  mvc:
+    throw-exception-if-no-handler-found: true
+  jmx:
+    enabled: false
+
+management:
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+      probes:
+        enabled: true
+  endpoints:
+    web:
+      base-path: /admin
+      exposure:
+        include: '*'
+  info:
+    java:
+      enabled: true
+    env:
+      enabled: true
+    git:
+      mode: full
+
+actuator:
+  username:
+  password:

@@ -1,0 +1,10 @@
+spring:
+  cloud:
+    discovery:
+      client:
+        simple:
+          instances:
+            library:
+              - uri: http://localhost:8080
+                metadata:
+                  management.context-path: /admin

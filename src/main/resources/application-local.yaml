@@ -4,7 +4,16 @@ spring:
       client:
         simple:
           instances:
-            library:
-              - uri: http://localhost:8080
+            admin:
+              - uri: http://localhost:${server.port}
                 metadata:
-                  management.context-path: /admin
+                  management.context-path: ${management.endpoints.web.base-path}
+            application:
+              - uri: http://localhost:${monitored.application.port}
+                metadata:
+                  management.context-path: ${monitored.application.actuator-endpoint}
+
+monitored:
+  application:
+    port: 8080
+    actuator-endpoint: /admin

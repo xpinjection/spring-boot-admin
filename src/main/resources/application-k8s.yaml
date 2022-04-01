@@ -5,4 +5,5 @@ spring:
         enabled: true
         service-labels:
           tech-stack: springboot
+        include-not-ready-addresses: true
       enabled: true

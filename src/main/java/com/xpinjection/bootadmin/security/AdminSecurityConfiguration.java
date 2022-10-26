@@ -7,11 +7,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -25,7 +28,7 @@ import java.util.UUID;
         SecurityProperties.class,
         ActuatorProperties.class
 })
-public class AdminSecurityConfiguration extends WebSecurityConfigurerAdapter {
+public class AdminSecurityConfiguration {
     private static final int TOKEN_VALIDITY_SECONDS = 1_209_600;
     private static final String ACTUATOR_ROLE = "ACTUATOR";
     private static final String ADMIN_ROLE = "ADMIN";
@@ -35,8 +38,8 @@ public class AdminSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final WebEndpointProperties webEndpointProperties;
     private final ActuatorProperties actuatorProperties;
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         var handler = new SavedRequestAwareAuthenticationSuccessHandler();
         handler.setTargetUrlParameter("redirectTo");
         handler.setDefaultTargetUrl(adminServer.path("/"));
@@ -73,20 +76,24 @@ public class AdminSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .rememberMe()
                     .key(UUID.randomUUID().toString())
                     .tokenValiditySeconds(TOKEN_VALIDITY_SECONDS);
+        return http.build();
     }
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        var encoder = new BCryptPasswordEncoder();
-        auth.inMemoryAuthentication()
-                .passwordEncoder(encoder)
-                .withUser(securityProperties.getUser().getName())
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public InMemoryUserDetailsManager userDetailsService(PasswordEncoder encoder) {
+        var admin = User.withUsername(securityProperties.getUser().getName())
                 .password(encoder.encode(securityProperties.getUser().getPassword()))
                 .roles(securityProperties.getUser().getRoles().toArray(String[]::new))
-            .and()
-                .passwordEncoder(encoder)
-                .withUser(actuatorProperties.getUsername())
+                .build();
+        var actuator = User.withUsername(actuatorProperties.getUsername())
                 .password(encoder.encode(actuatorProperties.getPassword()))
-                .roles(ACTUATOR_ROLE);
+                .roles(ACTUATOR_ROLE)
+                .build();
+        return new InMemoryUserDetailsManager(admin, actuator);
     }
 }

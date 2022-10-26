@@ -49,6 +49,8 @@ management:
       enabled: true
     git:
       mode: full
+    os:
+      enabled: true
 
 actuator:
   username:

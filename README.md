@@ -1,4 +1,7 @@
-# spring-boot-admin
+# Spring Boot Admin
+
+![CI status](https://github.com/xpinjection/spring-boot-admin/actions/workflows/maven.yml/badge.svg)
+
 Spring Boot Admin configured for K8S and local usage.
 
 ## Configuration profiles

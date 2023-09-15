@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -47,35 +48,26 @@ public class AdminSecurityConfiguration {
         var actuatorBasePath = webEndpointProperties.getBasePath();
         var loginPath = adminServer.path("/login");
         http
-                .authorizeRequests()
-                    .antMatchers(adminServer.path("/assets/**")).permitAll()
-                    .antMatchers(loginPath).permitAll()
-                    .antMatchers(actuatorBasePath.concat("/health/**")).permitAll()
-                    .antMatchers(actuatorBasePath.concat("/info/**")).permitAll()
-                    .antMatchers(actuatorBasePath.concat("/**")).hasAnyRole(ACTUATOR_ROLE, ADMIN_ROLE)
-                    .antMatchers(adminServer.path("/**")).hasAnyRole(ADMIN_ROLE)
-                    .anyRequest().authenticated()
-                    .and()
-                .formLogin()
-                    .loginPage(loginPath)
-                    .successHandler(handler)
-                    .and()
-                .logout()
-                    .logoutUrl(adminServer.path("/logout"))
-                    .and()
-                .httpBasic()
-                    .and()
-                .csrf()
-                    .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                    .ignoringRequestMatchers(
-                            new AntPathRequestMatcher(adminServer.path("/instances"), HttpMethod.POST.toString()),
-                            new AntPathRequestMatcher(adminServer.path("/instances/*"), HttpMethod.DELETE.toString()),
-                            new AntPathRequestMatcher(actuatorBasePath.concat("/**"))
-                    )
-                    .and()
-                .rememberMe()
-                    .key(UUID.randomUUID().toString())
-                    .tokenValiditySeconds(TOKEN_VALIDITY_SECONDS);
+                .authorizeHttpRequests(requests ->
+                        requests.requestMatchers(adminServer.path("/assets/**")).permitAll()
+                                .requestMatchers(loginPath).permitAll()
+                                .requestMatchers(actuatorBasePath.concat("/health/**")).permitAll()
+                                .requestMatchers(actuatorBasePath.concat("/info/**")).permitAll()
+                                .requestMatchers(actuatorBasePath.concat("/**")).hasAnyRole(ACTUATOR_ROLE, ADMIN_ROLE)
+                                .requestMatchers(adminServer.path("/**")).hasAnyRole(ADMIN_ROLE)
+                                .anyRequest().authenticated())
+                .formLogin(form -> form.loginPage(loginPath)
+                        .successHandler(handler))
+                .logout(logout -> logout.logoutUrl(adminServer.path("/logout")))
+                .httpBasic(Customizer.withDefaults())
+                .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .ignoringRequestMatchers(
+                                new AntPathRequestMatcher(adminServer.path("/instances"), HttpMethod.POST.toString()),
+                                new AntPathRequestMatcher(adminServer.path("/instances/*"), HttpMethod.DELETE.toString()),
+                                new AntPathRequestMatcher(actuatorBasePath.concat("/**"))
+                        ))
+                .rememberMe(rememberMe -> rememberMe.key(UUID.randomUUID().toString())
+                        .tokenValiditySeconds(TOKEN_VALIDITY_SECONDS));
         return http.build();
     }
 

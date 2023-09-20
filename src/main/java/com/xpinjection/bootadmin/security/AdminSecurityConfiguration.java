@@ -2,7 +2,6 @@ package com.xpinjection.bootadmin.security;
 
 import com.xpinjection.bootadmin.config.ActuatorProperties;
 import de.codecentric.boot.admin.server.config.AdminServerProperties;
-import io.netty.handler.codec.http.HttpMethod;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
@@ -11,14 +10,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.util.UUID;
 
@@ -60,12 +58,7 @@ public class AdminSecurityConfiguration {
                         .successHandler(handler))
                 .logout(logout -> logout.logoutUrl(adminServer.path("/logout")))
                 .httpBasic(Customizer.withDefaults())
-                .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .ignoringRequestMatchers(
-                                new AntPathRequestMatcher(adminServer.path("/instances"), HttpMethod.POST.toString()),
-                                new AntPathRequestMatcher(adminServer.path("/instances/*"), HttpMethod.DELETE.toString()),
-                                new AntPathRequestMatcher(actuatorBasePath.concat("/**"))
-                        ))
+                .csrf(AbstractHttpConfigurer::disable)
                 .rememberMe(rememberMe -> rememberMe.key(UUID.randomUUID().toString())
                         .tokenValiditySeconds(TOKEN_VALIDITY_SECONDS));
         return http.build();

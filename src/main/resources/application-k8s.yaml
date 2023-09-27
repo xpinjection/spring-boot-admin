@@ -6,4 +6,5 @@ spring:
         service-labels:
           tech-stack: springboot
         include-not-ready-addresses: true
-      enabled: true
+  main:
+    cloud-platform: kubernetes

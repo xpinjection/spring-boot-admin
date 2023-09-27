@@ -3,11 +3,9 @@ server:
     jsp:
       registered: false
   shutdown: graceful
+  port: 8081
 
 spring:
-  cloud:
-    kubernetes:
-      enabled: false
   boot:
     admin:
       monitor:
@@ -29,12 +27,15 @@ spring:
     throw-exception-if-no-handler-found: true
   jmx:
     enabled: false
+  main:
+    cloud-platform: none
 
 management:
   endpoint:
     env:
       post:
         enabled: true
+      show-values: when_authorized
     shutdown:
       enabled: true
     health:
@@ -42,6 +43,8 @@ management:
       show-components: always
       probes:
         enabled: true
+    configprops:
+      show-values: when_authorized
   endpoints:
     web:
       base-path: /admin

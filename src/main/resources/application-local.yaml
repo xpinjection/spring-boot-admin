@@ -9,11 +9,12 @@ spring:
                 metadata:
                   management.context-path: ${management.endpoints.web.base-path}
             application:
-              - uri: http://localhost:${monitored.application.port}
+              - uri: http://${monitored.application.host}:${monitored.application.port}
                 metadata:
                   management.context-path: ${monitored.application.actuator-endpoint}
 
 monitored:
   application:
+    host: 127.0.0.1
     port: 8080
     actuator-endpoint: /admin

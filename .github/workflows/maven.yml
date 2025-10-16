@@ -15,18 +15,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Git checkout
-      uses: actions/checkout@v3
-    - name: Set up JDK 17 with Maven
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: maven
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
-    - name: Publish Test Results
-      uses: EnricoMi/publish-unit-test-result-action@v1
-      if: always()
-      with:
-        files: "**/surefire-reports/TEST-*.xml"
+      - name: Git checkout
+        uses: actions/checkout@v3
+      - name: Set up JDK 24 with Maven
+        uses: actions/setup-java@v3
+        with:
+          java-version: '24'
+          distribution: 'temurin'
+          cache: maven
+      - name: Build with Maven
+        run: mvn -B package --file pom.xml
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
+        with:
+          files: "**/surefire-reports/TEST-*.xml"

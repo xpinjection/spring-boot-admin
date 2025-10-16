@@ -20,7 +20,7 @@ import static io.restassured.RestAssured.given;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-public class SecurityConfigurationTest {
+class SecurityConfigurationTest {
     @LocalServerPort
     protected int port;
 
@@ -41,37 +41,37 @@ public class SecurityConfigurationTest {
     }
 
     @Test
-    public void springBootAdminEndpointsAreNotAccessibleWithoutAuthorization() {
+    void springBootAdminEndpointsAreNotAccessibleWithoutAuthorization() {
         verifyPathAccess("/applications", HttpStatus.SC_UNAUTHORIZED);
     }
 
     @Test
-    public void springBootAdminEndpointsAreAccessibleUnderAdminRole() {
+    void springBootAdminEndpointsAreAccessibleUnderAdminRole() {
         verifyPathAccessUnderUser("/applications", admin, HttpStatus.SC_OK);
     }
 
     @Test
-    public void springBootAdminEndpointsAreNotAccessibleUnderActuatorRole() {
+    void springBootAdminEndpointsAreNotAccessibleUnderActuatorRole() {
         verifyPathAccessUnderUser("/applications", actuator, HttpStatus.SC_FORBIDDEN);
     }
 
     @Test
-    public void actuatorEndpointsAreNotAccessibleWithoutAuthorization() {
+    void actuatorEndpointsAreNotAccessibleWithoutAuthorization() {
         verifyPathAccess("/admin/env", HttpStatus.SC_UNAUTHORIZED);
     }
 
     @Test
-    public void actuatorEndpointsAreAccessibleUnderActuatorRole() {
+    void actuatorEndpointsAreAccessibleUnderActuatorRole() {
         verifyPathAccessUnderUser("/admin/env", actuator, HttpStatus.SC_OK);
     }
 
     @Test
-    public void actuatorEndpointsAreAccessibleUnderAdminRole() {
+    void actuatorEndpointsAreAccessibleUnderAdminRole() {
         verifyPathAccessUnderUser("/admin/env", admin, HttpStatus.SC_OK);
     }
 
     @Test
-    public void healthAndInfoActuatorEndpointsAreOpenWithoutAuthorization() {
+    void healthAndInfoActuatorEndpointsAreOpenWithoutAuthorization() {
         verifyPathAccess("/admin/health", HttpStatus.SC_OK);
         verifyPathAccess("/admin/health/livenessState", HttpStatus.SC_OK);
         verifyPathAccess("/admin/info", HttpStatus.SC_OK);

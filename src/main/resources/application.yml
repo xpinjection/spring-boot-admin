@@ -23,8 +23,6 @@ spring:
     name: boot-admin
     admin:
       enabled: true
-  mvc:
-    throw-exception-if-no-handler-found: true
   jmx:
     enabled: false
   main:
@@ -37,7 +35,7 @@ management:
         enabled: true
       show-values: when_authorized
     shutdown:
-      enabled: true
+      access: unrestricted
     health:
       show-details: always
       show-components: always
@@ -58,6 +56,8 @@ management:
     git:
       mode: full
     os:
+      enabled: true
+    process:
       enabled: true
 
 actuator:

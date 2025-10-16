@@ -4,6 +4,7 @@ import com.xpinjection.bootadmin.config.ActuatorProperties;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.web.client.BasicAuthHttpHeaderProvider;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
@@ -15,8 +16,9 @@ import org.springframework.util.StringUtils;
 public class CustomBasicAuthHttpHeaderProvider extends BasicAuthHttpHeaderProvider {
     private final ActuatorProperties actuatorProperties;
 
+    @NotNull
     @Override
-    public HttpHeaders getHeaders(Instance instance) {
+    public HttpHeaders getHeaders(@NotNull Instance instance) {
         var username = actuatorProperties.getUsername();
         var password = actuatorProperties.getPassword();
         var headers = new HttpHeaders();
